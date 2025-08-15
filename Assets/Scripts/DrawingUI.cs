@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class DrawingUI : MonoBehaviour
 {
     [SerializeField] private FingerDrawingSystem _drawingSystem;
+    [SerializeField] private DrawingSaver _drawingSaver;
     [SerializeField] private Button _colorButton;
     [SerializeField] private Button _saveButton;
     [SerializeField] private Button _loadButton;
@@ -15,8 +16,8 @@ public class DrawingUI : MonoBehaviour
     private void Start()
     {
         _colorButton.onClick.AddListener(ToggleColor);
-        //_saveButton.onClick.AddListener();
-        //_loadButton.onClick.AddListener();
+        _saveButton.onClick.AddListener(_drawingSaver.SaveDrawing);
+        _loadButton.onClick.AddListener(_drawingSaver.LoadDrawing);
         _clearButton.onClick.AddListener(_drawingSystem.ClearAll);
     }
 

@@ -87,4 +87,49 @@ public class FingerDrawingSystem : MonoBehaviour
             Destroy(line.gameObject);
         _lines.Clear();
     }
+
+    public DrawingData GetDrawingData()
+    {
+        var data = new DrawingData();
+        foreach (var line in _lines)
+        {
+            var lineData = new LineData
+            {
+                Color = line.startColor,
+                Positions = new Vector3[line.positionCount] // Создаём массив нужного размера
+            };
+            line.GetPositions(lineData.Positions); // Заполняем массив точками
+            data.Lines.Add(lineData);
+        }
+        return data;
+    }
+
+    public void LoadDrawing(DrawingData data)
+    {
+        ClearAll();
+        foreach (var lineData in data.Lines)
+        {
+            var line = Instantiate(_linePrefab, _surfaceDetector.transform);
+            line.startColor = lineData.Color;
+            line.endColor = lineData.Color;
+            line.startWidth = _lineWidth;
+            line.endWidth = _lineWidth;
+            line.positionCount = lineData.Positions.Length;
+            line.SetPositions(lineData.Positions);
+            _lines.Add(line);
+        }
+    }
+}
+
+[System.Serializable]
+public class DrawingData
+{
+    public List<LineData> Lines = new();
+}
+
+[System.Serializable]
+public class LineData
+{
+    public Color Color;
+    public Vector3[] Positions;
 }
