@@ -2,17 +2,25 @@ using UnityEngine;
 using System.IO;
 using System;
 
+/// <summary>
+/// Система сохранения и загрузки рисунков из линий в формате JSON
+/// </summary>
 public class DrawingSaver : MonoBehaviour
 {
-    private string _savePath;
-    private FingerDrawingSystem _drawingSystem;
+    [SerializeField] private FingerDrawingSystem _drawingSystem;
 
-    private void Awake()
+    private string _savePath; // Полный путь к файлу сохранения
+
+    private void Start()
     {
+        if (_drawingSystem == null) _drawingSystem = FindFirstObjectByType<FingerDrawingSystem>();
+
         _savePath = Path.Combine(Application.persistentDataPath, "drawing.json");
-        _drawingSystem = FindFirstObjectByType<FingerDrawingSystem>();
     }
 
+    /// <summary>
+    /// Сохраняет текущий рисунок в JSON файл
+    /// </summary>
     public void SaveDrawing()
     {
         var data = _drawingSystem.GetDrawingData();
@@ -21,6 +29,9 @@ public class DrawingSaver : MonoBehaviour
         Debug.Log($"Drawing saved to {_savePath}");
     }
 
+    /// <summary>
+    /// Загружает последний сохраненный рисунок из JSON файла
+    /// </summary>
     public void LoadDrawing()
     {
         if (!File.Exists(_savePath)) 
