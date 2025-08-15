@@ -14,6 +14,7 @@ public class FingerDrawingSystem : MonoBehaviour
     [SerializeField] private SurfaceDetector _surfaceDetector;
     [SerializeField] private LineRenderer _linePrefab;
     [SerializeField] private float _lineWidth = 0.01f;
+    [SerializeField] private int _maxLines = 100; // Лимит линий для предотвращения утечек
 
     private LineRenderer _currentLine;
     private List<LineRenderer> _lines = new();
@@ -71,6 +72,14 @@ public class FingerDrawingSystem : MonoBehaviour
     /// <param name="startPoint">Начальная точка на поверхности</param>
     private void StartNewLine(Vector3 startPoint)
     {
+        // Удаляем самую старую линию, если достигнут лимит
+        if (_lines.Count >= _maxLines)
+        {
+            LineRenderer oldestLine = _lines[0];
+            Destroy(oldestLine.gameObject);
+            _lines.RemoveAt(0);
+        }
+
         // Создаем новый LineRenderer как дочерний объект поверхности
         _currentLine = Instantiate(_linePrefab, _surfaceDetector.transform);
 
@@ -151,6 +160,8 @@ public class FingerDrawingSystem : MonoBehaviour
 
         foreach (var lineData in data.Lines)
         {
+            if (_lines.Count >= _maxLines) break;
+
             var line = Instantiate(_linePrefab, _surfaceDetector.transform);
 
             line.startColor = lineData.Color;

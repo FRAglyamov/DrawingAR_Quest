@@ -1929,6 +1929,7 @@ MonoBehaviour:
   _surfaceDetector: {fileID: 557432927}
   _linePrefab: {fileID: 5132063988414741759, guid: e7e25af28432cea4286efa092a97e8ae, type: 3}
   _lineWidth: 0.01
+  _maxLines: 100
 --- !u!4 &798019209
 Transform:
   m_ObjectHideFlags: 0
