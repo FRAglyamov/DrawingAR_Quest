@@ -108,6 +108,13 @@ public class DrawingManager : MonoBehaviour
                 Positions = new Vector3[line.positionCount] // Выделяем массив
             };
             line.GetPositions(lineData.Positions); // Копируем точки
+
+            // Преобразуем мировые координаты в локальные относительно поверхности
+            for (int i = 0; i < lineData.Positions.Length; i++)
+            {
+                lineData.Positions[i] = _surfaceDetector.WorldToSurfacePoint(lineData.Positions[i]);
+            }
+
             data.Lines.Add(lineData);
         }
 
@@ -134,7 +141,15 @@ public class DrawingManager : MonoBehaviour
             line.endWidth = _lineWidth;
 
             line.positionCount = lineData.Positions.Length;
-            line.SetPositions(lineData.Positions);
+
+            // Преобразуем локальные координаты относительно поверхности в мировые
+            Vector3[] worldPositions = new Vector3[lineData.Positions.Length];
+            for (int i = 0; i < lineData.Positions.Length; i++)
+            {
+                worldPositions[i] = _surfaceDetector.SurfaceToWorldPoint(lineData.Positions[i]);
+            }
+
+            line.SetPositions(worldPositions);
 
             _lines.Add(line);
         }

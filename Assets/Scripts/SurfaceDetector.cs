@@ -42,4 +42,24 @@ public class SurfaceDetector : MonoBehaviour
         surfacePoint = Vector3.zero;
         return false;
     }
+
+    /// <summary>
+    /// Преобразует мировые координаты в локальные относительно поверхности
+    /// </summary>
+    /// <param name="worldPosition">Мировые координаты</param>
+    /// <returns>Локальные координаты относительно поверхности</returns>
+    public Vector3 WorldToSurfacePoint(Vector3 worldPosition)
+    {
+        return transform.InverseTransformPoint(worldPosition);
+    }
+
+    /// <summary>
+    /// Преобразует локальные координаты относительно поверхности в мировые
+    /// </summary>
+    /// <param name="surfacePoint">Локальные координаты относительно поверхности</param>
+    /// <returns>Мировые координаты</returns>
+    public Vector3 SurfaceToWorldPoint(Vector3 surfacePoint)
+    {
+        return transform.TransformPoint(surfacePoint);
+    }
 }
