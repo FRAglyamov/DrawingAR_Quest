@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 /// <summary>
 /// Основная система для рисования пальцем на поверхностях
@@ -18,11 +19,38 @@ public class FingerDrawingSystem : MonoBehaviour
 
     private LineRenderer _currentLine;
     private List<LineRenderer> _lines = new();
+    private ObjectPool<LineRenderer> _linePool;
     private OVRBone _indexTip;
     private bool _isDrawing;
     private Color _currentColor = Color.red;
 
+
     private void Start()
+    {
+        InitializeLinePool();
+
+        InitializeFingerTracking();
+    }
+
+    /// <summary>
+    /// Инициализация пула объектов для рисования LineRenderer
+    /// </summary>
+    private void InitializeLinePool()
+    {
+        _linePool = new ObjectPool<LineRenderer>(
+            createFunc: () => Instantiate(_linePrefab, _surfaceDetector.transform), // Создаем новый LineRenderer как дочерний объект поверхности
+            actionOnGet: (line) => line.gameObject.SetActive(true),
+            actionOnRelease: (line) => line.gameObject.SetActive(false),
+            actionOnDestroy: (line) => Destroy(line.gameObject),
+            defaultCapacity: 10,
+            maxSize: _maxLines
+        );
+    }
+
+    /// <summary>
+    /// Установка ссылок костей руки
+    /// </summary>
+    private void InitializeFingerTracking()
     {
         if (_skeleton == null) _skeleton = _hand.GetComponent<OVRSkeleton>();
 
@@ -76,12 +104,11 @@ public class FingerDrawingSystem : MonoBehaviour
         if (_lines.Count >= _maxLines)
         {
             LineRenderer oldestLine = _lines[0];
-            Destroy(oldestLine.gameObject);
             _lines.RemoveAt(0);
+            _linePool.Release(oldestLine);
         }
 
-        // Создаем новый LineRenderer как дочерний объект поверхности
-        _currentLine = Instantiate(_linePrefab, _surfaceDetector.transform);
+        _currentLine = _linePool.Get();
 
         // Настраиваем визуальные параметры
         _currentLine.startColor = _currentColor;
@@ -124,7 +151,7 @@ public class FingerDrawingSystem : MonoBehaviour
     public void ClearAll()
     {
         foreach (var line in _lines)
-            Destroy(line.gameObject);
+            _linePool.Release(line);
         _lines.Clear();
     }
 
@@ -162,7 +189,7 @@ public class FingerDrawingSystem : MonoBehaviour
         {
             if (_lines.Count >= _maxLines) break;
 
-            var line = Instantiate(_linePrefab, _surfaceDetector.transform);
+            var line = _linePool.Get();
 
             line.startColor = lineData.Color;
             line.endColor = lineData.Color;
