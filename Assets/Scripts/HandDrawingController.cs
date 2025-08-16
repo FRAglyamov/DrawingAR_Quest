@@ -15,6 +15,9 @@ public class HandDrawingController : MonoBehaviour
     private LineRenderer _currentLine;
     private OVRBone _indexTip;
     private bool _isDrawing;
+    private Vector3 _lastPoint;
+    private const float MIN_DISTANCE = 0.003f; // Минимальное расстояние между точками линии
+
 
     private void Start()
     {
@@ -22,6 +25,7 @@ public class HandDrawingController : MonoBehaviour
         {
             Debug.LogError("Dependencies not assigned!", this);
             enabled = false;
+            return;
         }
 
         InitializeFingerTracking();
@@ -62,10 +66,12 @@ public class HandDrawingController : MonoBehaviour
             if (!_isDrawing)
             {
                 StartNewLine(surfacePoint);
+                _lastPoint = surfacePoint;
             }
-            else
+            else if (Vector3.Distance(_lastPoint, surfacePoint) > MIN_DISTANCE)
             {
                 ContinueLine(surfacePoint);
+                _lastPoint = surfacePoint;
             }
         }
         else if (_isDrawing)

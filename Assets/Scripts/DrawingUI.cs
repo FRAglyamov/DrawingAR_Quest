@@ -25,6 +25,7 @@ public class DrawingUI : MonoBehaviour
         {
             Debug.LogError("Dependencies not assigned!", this);
             enabled = false;
+            return;
         }
 
         _colorButton.onClick.AddListener(ToggleColor);

@@ -23,6 +23,7 @@ public class DrawingManager : MonoBehaviour
         {
             Debug.LogError("Dependencies not assigned!", this);
             enabled = false;
+            return;
         }
 
         InitializeLinePool();

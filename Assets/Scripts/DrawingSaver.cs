@@ -17,6 +17,7 @@ public class DrawingSaver : MonoBehaviour
         {
             Debug.LogError("Dependencies not assigned!", this);
             enabled = false;
+            return;
         }
 
         _savePath = Path.Combine(Application.persistentDataPath, "drawing.json");
