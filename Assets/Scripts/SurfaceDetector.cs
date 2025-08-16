@@ -1,17 +1,17 @@
 using UnityEngine;
 
 /// <summary>
-/// Определяет, касается ли палец виртуальной поверхности для рисования
+/// РћРїСЂРµРґРµР»СЏРµС‚, РєР°СЃР°РµС‚СЃСЏ Р»Рё РїР°Р»РµС† РІРёСЂС‚СѓР°Р»СЊРЅРѕР№ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ
 /// </summary>
 public class SurfaceDetector : MonoBehaviour
 {
-    [Tooltip("Ссылка на трансформ поверхности для рисования (виртуальный лист бумаги)")]
+    [Tooltip("РЎСЃС‹Р»РєР° РЅР° С‚СЂР°РЅСЃС„РѕСЂРј РїРѕРІРµСЂС…РЅРѕСЃС‚Рё РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ (РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ Р»РёСЃС‚ Р±СѓРјР°РіРё)")]
     [SerializeField] private Transform _paperSurface;
 
-    [Tooltip("Допустимое расстояние от поверхности для рисования")]
+    [Tooltip("Р”РѕРїСѓСЃС‚РёРјРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ")]
     [SerializeField] private float _surfaceOffset = 0.01f;
 
-    [Tooltip("Размер области рисования (ширина и высота в локальных координатах)")]
+    [Tooltip("Р Р°Р·РјРµСЂ РѕР±Р»Р°СЃС‚Рё СЂРёСЃРѕРІР°РЅРёСЏ (С€РёСЂРёРЅР° Рё РІС‹СЃРѕС‚Р° РІ Р»РѕРєР°Р»СЊРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…)")]
     [SerializeField] private Vector2 _drawingAreaSize = new Vector2(0.5f, 0.5f);
 
     private void Start()
@@ -20,21 +20,21 @@ public class SurfaceDetector : MonoBehaviour
     }
 
     /// <summary>
-    /// Проверяет, находится ли точка в пределах поверхности для рисования
+    /// РџСЂРѕРІРµСЂСЏРµС‚, РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё С‚РѕС‡РєР° РІ РїСЂРµРґРµР»Р°С… РїРѕРІРµСЂС…РЅРѕСЃС‚Рё РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ
     /// </summary>
-    /// <param name="position">Мировая позиция для проверки</param>
-    /// <param name="surfacePoint">Выходная позиция на поверхности</param>
-    /// <returns>True если точка над поверхностью</returns>
+    /// <param name="position">РњРёСЂРѕРІР°СЏ РїРѕР·РёС†РёСЏ РґР»СЏ РїСЂРѕРІРµСЂРєРё</param>
+    /// <param name="surfacePoint">Р’С‹С…РѕРґРЅР°СЏ РїРѕР·РёС†РёСЏ РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚Рё</param>
+    /// <returns>True РµСЃР»Рё С‚РѕС‡РєР° РЅР°Рґ РїРѕРІРµСЂС…РЅРѕСЃС‚СЊСЋ</returns>
     public bool IsTouchingSurface(Vector3 position, out Vector3 surfacePoint)
     {
         Vector3 localPos = _paperSurface.InverseTransformPoint(position);
 
-        // Проверяем, находится ли точка в пределах плоскости
+        // РџСЂРѕРІРµСЂСЏРµРј, РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё С‚РѕС‡РєР° РІ РїСЂРµРґРµР»Р°С… РїР»РѕСЃРєРѕСЃС‚Рё
         if (Mathf.Abs(localPos.z) < _surfaceOffset &&
             Mathf.Abs(localPos.x) <= _drawingAreaSize.x &&
             Mathf.Abs(localPos.y) <= _drawingAreaSize.y)
         {
-            localPos.z = 0; // Проецируем на поверхность
+            localPos.z = 0; // РџСЂРѕРµС†РёСЂСѓРµРј РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ
             surfacePoint = _paperSurface.TransformPoint(localPos);
             return true;
         }

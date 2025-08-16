@@ -2,12 +2,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Управление пользовательским интерфейсом для системы рисования
+/// РЈРїСЂР°РІР»РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРј РёРЅС‚РµСЂС„РµР№СЃРѕРј РґР»СЏ СЃРёСЃС‚РµРјС‹ СЂРёСЃРѕРІР°РЅРёСЏ
 /// </summary>
 public class DrawingUI : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private FingerDrawingSystem _drawingSystem;
+    [Header("Dependencies")]
+    [SerializeField] private DrawingManager _drawingManager;
     [SerializeField] private DrawingSaver _drawingSaver;
 
     [Header("UI Elements")]
@@ -21,18 +21,24 @@ public class DrawingUI : MonoBehaviour
 
     private void Start()
     {
+        if (_drawingManager == null || _drawingSaver == null)
+        {
+            Debug.LogError("Dependencies not assigned!", this);
+            enabled = false;
+        }
+
         _colorButton.onClick.AddListener(ToggleColor);
         _saveButton.onClick.AddListener(_drawingSaver.SaveDrawing);
         _loadButton.onClick.AddListener(_drawingSaver.LoadDrawing);
-        _clearButton.onClick.AddListener(_drawingSystem.ClearAll);
+        _clearButton.onClick.AddListener(_drawingManager.ClearAll);
     }
 
     /// <summary>
-    /// Переключает цвет рисования
+    /// РџРµСЂРµРєР»СЋС‡Р°РµС‚ С†РІРµС‚ СЂРёСЃРѕРІР°РЅРёСЏ
     /// </summary>
     private void ToggleColor()
     {
         _currentColorIndex = (_currentColorIndex + 1) % _colors.Length;
-        _drawingSystem.SetColor(_colors[_currentColorIndex]);
+        _drawingManager.SetColor(_colors[_currentColorIndex]);
     }
 }

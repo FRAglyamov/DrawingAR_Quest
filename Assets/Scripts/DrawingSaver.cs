@@ -3,40 +3,44 @@ using System.IO;
 using System;
 
 /// <summary>
-/// Система сохранения и загрузки рисунков из линий в формате JSON
+/// РЎРёСЃС‚РµРјР° СЃРѕС…СЂР°РЅРµРЅРёСЏ Рё Р·Р°РіСЂСѓР·РєРё СЂРёСЃСѓРЅРєРѕРІ РёР· Р»РёРЅРёР№ РІ С„РѕСЂРјР°С‚Рµ JSON
 /// </summary>
 public class DrawingSaver : MonoBehaviour
 {
-    [SerializeField] private FingerDrawingSystem _drawingSystem;
+    [SerializeField] private DrawingManager _drawingManager;
 
-    private string _savePath; // Полный путь к файлу сохранения
+    private string _savePath; // РџРѕР»РЅС‹Р№ РїСѓС‚СЊ Рє С„Р°Р№Р»Сѓ СЃРѕС…СЂР°РЅРµРЅРёСЏ
 
     private void Start()
     {
-        if (_drawingSystem == null) _drawingSystem = FindFirstObjectByType<FingerDrawingSystem>();
+        if (_drawingManager == null)
+        {
+            Debug.LogError("Dependencies not assigned!", this);
+            enabled = false;
+        }
 
         _savePath = Path.Combine(Application.persistentDataPath, "drawing.json");
     }
 
     /// <summary>
-    /// Сохраняет текущий рисунок в JSON файл
+    /// РЎРѕС…СЂР°РЅСЏРµС‚ С‚РµРєСѓС‰РёР№ СЂРёСЃСѓРЅРѕРє РІ JSON С„Р°Р№Р»
     /// </summary>
     public void SaveDrawing()
     {
-        var data = _drawingSystem.GetDrawingData();
+        var data = _drawingManager.GetDrawingData();
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(_savePath, json);
         Debug.Log($"Drawing saved to {_savePath}");
     }
 
     /// <summary>
-    /// Загружает последний сохраненный рисунок из JSON файла
+    /// Р—Р°РіСЂСѓР¶Р°РµС‚ РїРѕСЃР»РµРґРЅРёР№ СЃРѕС…СЂР°РЅРµРЅРЅС‹Р№ СЂРёСЃСѓРЅРѕРє РёР· JSON С„Р°Р№Р»Р°
     /// </summary>
     public void LoadDrawing()
     {
         if (!File.Exists(_savePath)) 
         {
-            Debug.LogWarning($"No file to load at this path: {_savePath}");
+            Debug.LogWarning($"No file to load at this path: {_savePath}", this);
             return; 
         }
 
@@ -44,7 +48,7 @@ public class DrawingSaver : MonoBehaviour
         {
             string json = File.ReadAllText(_savePath);
             var data = JsonUtility.FromJson<DrawingData>(json);
-            _drawingSystem.LoadDrawing(data);
+            _drawingManager.LoadDrawing(data);
         }
         catch (Exception e)
         {
